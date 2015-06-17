@@ -1,4 +1,8 @@
 class Celluloid::SMTP::Message::Parser
-  include Celluloid
+  #de include Celluloid
+
+  def initialize(data)
+    @data = data
+  end
 
 end

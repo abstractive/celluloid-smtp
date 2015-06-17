@@ -1,12 +1,11 @@
-module Celluloid::SMTP::Server::Connection::Event
-
+module Celluloid::SMTP::Events
   # get event on CONNECTION
-  def on_connect
+  def on_connection(socket)
     #de logger.debug("Client connect from #{ctx[:server][:remote_ip]}:#{ctx[:server][:remote_port]}")
   end
 
   # get event before DISONNECT
-  def on_disconnect
+  def on_disconnect(socket)
     #de logger.debug("Client disconnect from #{ctx[:server][:remote_ip]}:#{ctx[:server][:remote_port]}")
   end
 
