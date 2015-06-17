@@ -1,0 +1,1 @@
+Evented, actor-based SMTP server built on Celluloid, inspired by `midi-smtp-server`.
