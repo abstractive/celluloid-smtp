@@ -1,4 +1,4 @@
-class Celluloid::SMTP::Message::Transporter
+class Celluloid::SMTP::Server::Transporter
   include Celluloid::IO
 
   def deliver(message)
