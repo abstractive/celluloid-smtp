@@ -1,16 +1,32 @@
 class Celluloid::SMTP::Connection
 
-  attr_reader :socket, :automata, :message
+  attr_reader :socket, :automata
+
   extend Forwardable
-  def_delegators :@socket, :close, :peeraddr
+  def_delegators :@socket, :close, :peeraddr, :print, :closed?
+  def_delegators :@automata, :transition
 
   def initialize(socket, configuration)
-    @socket = socket
-    @behavior = configuration.fetch(:behavior, DEFAULT_BEHAVIOR)
-    @configuration = configuration
     @automata = Automata.new(self)
-    debug("Connection from #{remote_ip}")
-    @automata.transition :parsing
+    @configuration = configuration.dup
+    @socket = socket
+    @timestamps = {}
+    @context = nil
+    @behavior = configuration.fetch(:behavior, DEFAULT_BEHAVIOR)
+    transition :connection
+  end
+
+  def start!
+    @timestamps[:start] = Time.now
+  end
+
+  def finish!
+    @timestamps[:finish] = Time.now
+  end
+
+  def length
+    raise "Connection incomplete." unless @timestamps[:start] && @timestamps[:finish]
+    @timestamps[:finish].to_f - @timestamps[:start].to_f
   end
 
   def relaying?
@@ -21,13 +37,8 @@ class Celluloid::SMTP::Connection
     @behavior == :deliver
   end
 
-  def parse!
-    @message = Celluloid::SMTP::Message::Parser.new(self)
-    @automata.transition :parsed
-  rescue => ex
-    error "Error parsing message: #{ex.class}: #{ex.to_s}"
-    ex.backtrace.each { |line| error line }
-    @automata.transition :closed
+  def print!(string)
+    print "#{string}\r\n"
   end
 
   def remote_ip

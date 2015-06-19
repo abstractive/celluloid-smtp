@@ -61,8 +61,7 @@ values = tests.map(&:value)
 total=Time.now-start
 
 failures = values.map { |v| v[1] }.inject{ |sum,f| sum + f }
-times = values.map { |v| v[0] }
-average = times.inject{ |sum, t| sum + t }.to_f / values.size
+average = values.map { |v| v[0] }.inject{ |sum, t| sum + t }.to_f / values.size
 
 puts ""
 if failures == THREADS*TESTS
@@ -71,4 +70,4 @@ else
   puts "Average time for #{TESTS}x#{THREADS} messages: #{"%0.4f" % average} seconds per message, with #{failures} failures."
 end
 
-puts "Total time running test: #{"%0.4f" % total} ( ~#{"%0.4f" % (total/(TESTS*THREADS))} per message )"
+puts "Total time running test: #{"%0.4f" % total} ( ~#{"%0.4f" % (total/(TESTS*THREADS))} of overall runtime, per message )"

@@ -5,13 +5,14 @@ class Celluloid::SMTP::Logging
     define_method(method) { |*args| async.log(method,*args) }
   }
 
+  alias :console :info
+
   def log(method, *args)
     Celluloid::SMTP::Constants::LOGGER.send(method,*args)
   end
-end
 
-Celluloid::SMTP::Logging.supervise as: :logger
-
-module Celluloid::SMTP::Constants
-  Logger = Celluloid[:logger]
+  def exception(ex, note)
+    error("#{note}: #{ex} (#{ex.class})")
+    ex.backtrace.each { |line| error("* #{line}") }
+  end
 end

@@ -3,6 +3,8 @@ $LOAD_PATH.push(File.expand_path("../../lib", __FILE__))
 require 'bundler/setup'
 require 'mail'
 
+INTERVAL = 2.22
+
 Mail.defaults do
   delivery_method :smtp, address: "localhost", port: 2525
 end
@@ -12,24 +14,43 @@ FROM = TO
 
 fail "No TO address specified." unless TO
 
-puts "Simulating sending a message every 5 seconds, to #{TO}."
+puts "Simulating sending a message every #{INTERVAL} seconds, to #{TO}."
 
+futures = []
+@mutex = Mutex.new
 begin
-  loop {
-    mail = Mail.new do
-      from      FROM
-      to        TO
-      subject   'Test email.'
-      body      "Test message.... #{Time.now}"
-    end
+  Thread.new {
+    @mutex.synchronize {
+      loop {
+        futures = Thread.new {
+          print "."
+          start = Time.now
+          mail = Mail.new do
+            from      FROM
+            to        TO
+            subject   'Test email.'
+            body      "Test message.... #{start}"
+          end
 
-    begin
-      mail.deliver
-      puts "Sent message."
-    rescue => ex
-      puts "Error communicating with server: #{ex} (#{ex.class})"
-    end
-    sleep 5
+          begin
+            mail.deliver
+            print "|"
+          rescue Errno::ECONNREFUSED
+            print "X"
+          rescue EOFError
+            print "?"
+          rescue => ex
+            print "!"
+            STDERR.puts "Error communicating with server: #{ex} (#{ex.class})"
+          end
+        }  
+        sleep INTERVAL
+      }
+    }
+  }
+
+  loop {
+    future = @mutex.synchronize { futures.shift }.value rescue nil
   }
 rescue Interrupt
   puts "Done testing."

@@ -2,34 +2,47 @@ module Celluloid
   module SMTP
     class Server
       include Celluloid::IO
-      include Events
-
       class << self
-        def launch(options, &handler)
-          supervise(as: :smtpd, args:[options, handler])
+        @logger = nil
+        attr_accessor :logger
+        def launch(options)
+          unless @logger
+            Celluloid::SMTP::Logging.supervise as: :logger
+            @logger = Celluloid[:logger]
+          end
+          if SMTP::Constants::HANDLERS > 0
+            Celluloid::SMTP::Server::Handler.supervise as: :handler, size: SMTP::Constants::HANDLERS
+          end
+          supervise(as: :smtpd, args:[options])
+          Celluloid[:smtpd]
         end
-        def run!(options={}, &handler)
-          launch(options, &handler)
-          Celluloid[:smtpd].run!
+        def run!(options={})
+          launch(options)
         end
-        def run(options={}, &handler)
-          launch(options, &handler)
-          Celluloid[:smtpd].run
+        def run(options={})
+          launch(options)
+          sleep
         end
       end
 
+      finalizer :ceased
 
-      def initialize(options={}, handler=nil)
+      def ceased
+        @server.close rescue nil
+        warn "SMTP Server online."
+      end
+
+      def initialize(options={})
         @options = options
         @host = options.fetch(:host, DEFAULT_HOST)
         @port = options.fetch(:port, DEFAULT_PORT)
         @behavior = options.fetch(:behavior, DEFAULT_BEHAVIOR)
-        @handler = handler || method(:on_connection)
+        @hostname = options.fetch(:hostname, DEFAULT_HOSTNAME)
 
         @server = Celluloid::IO::TCPServer.new(@host, @port)
         @server.listen(options.fetch(:backlog, DEFAULT_BACKLOG))
 
-        Logger.info("SMTP Server #{SMTP::VERSION} [ #{@host}:#{@port} ]")
+        console("Celluloid::IO SMTP Server #{SMTP::VERSION} @ #{@host}:#{@port}")
 
         @options[:rescue] ||= []
         @options[:rescue] += [
@@ -39,41 +52,40 @@ module Celluloid
           Errno::ETIMEDOUT,
           Errno::EHOSTUNREACH
         ]
-      end
-
-      def run!(&block)
-        async.run(&block)
-      end
-
-      def run(&block)
-        Logger.info "Starting to handle SMTP connections."
-        @online = true
-        loop {
-          break unless @online
-          begin
-            socket = @server.accept
-            Logger.debug "New connection socket."
-          rescue *@options[:rescue] => ex
-            Logger.warn "Error accepting socket: #{ex.class}: #{ex.to_s}"
-            next
-          rescue IOError, EOFError
-
-          end
-          async.handle_connection(socket)
-        }
-      end
-
-      def handle_connection(socket)
-        connection = Connection.new(socket, @options)
-        @handler.call(connection)
-      rescue EOFError, IOError
-        Logger.warn "Premature disconnect."
+        async.run
       end
 
       def shutdown
         @online = false
         sleep 0.126
         @server.close if @server rescue nil
+      end
+
+      private
+
+      def run
+        console "Starting to handle SMTP connections, with #{HANDLERS} handlers."
+        @online = true
+        loop {
+          break unless @online
+          begin
+            socket = @server.accept
+          rescue *@options[:rescue] => ex
+            warn "Error accepting socket: #{ex.class}: #{ex.to_s}"
+            next
+          rescue IOError, EOFError
+            warn "I/O Error on socket: #{ex.class}: #{ex.to_s}"
+          end
+          async.connection(socket)
+        }
+      end
+
+      def connection(socket)
+        if HANDLERS > 0
+          Celluloid[:handler].socket(socket, @options)
+        else
+          self.class.protector(socket) { Connection.new(io, @options) }
+        end
       end
 
     end
