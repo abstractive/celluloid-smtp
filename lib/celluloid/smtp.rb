@@ -1,12 +1,12 @@
 require 'celluloid/current'
 require 'celluloid/io'
-require 'celluloid/smtp/constants'
-require 'celluloid/smtp/logging'
-require 'celluloid/smtp/version'
-require 'celluloid/smtp/extensions'
 
 module Celluloid
   module SMTP
+    require 'celluloid/smtp/constants'
+    require 'celluloid/smtp/logging'
+    require 'celluloid/smtp/version'
+    require 'celluloid/smtp/extensions'
     class Server
       include SMTP::Extensions
       require 'celluloid/smtp/server'
