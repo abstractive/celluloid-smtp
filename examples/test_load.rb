@@ -7,16 +7,18 @@ require 'mail'
 TESTS = 1000
 THREADS = 4
 
-TO = "test@extremist.digital"
-FROM = TO
+HOST = ARGV[0] || "localhost"
+PORT = (ARGV[1] || 2525).to_i
+TO = ARGV[2] || "smtp@celluloid.io"
+FROM = ARGV[3] || TO
 
 Mail.defaults do
-  delivery_method :smtp, address: "localhost", port: 2525
+  delivery_method :smtp, address: HOST, port: PORT
 end
 
 fail "No TO address specified." unless TO
 
-puts "Simulating sending #{TESTS}x#{THREADS} messages to #{TO}."
+puts "Simulating sending #{TESTS}x#{THREADS} messages through #{HOST}@#{PORT}."
 
 class Sender
   include Celluloid
@@ -52,22 +54,34 @@ end
 senders = THREADS.times.map { Sender.new }
 
 start = Time.now
-
-tests = senders.map {|sender|
-  sender.future.tests(TESTS)
-}
+tests = senders.map {|sender| sender.future.tests(TESTS) }
 
 values = tests.map(&:value)
-total=Time.now-start
+total = Time.now-start
+total_fail = false
 
+puts "\n\n\n"
+
+puts "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
 failures = values.map { |v| v[1] }.inject{ |sum,f| sum + f }
 average = values.map { |v| v[0] }.inject{ |sum, t| sum + t }.to_f / values.size
-
+overall_average = total/(TESTS*THREADS)
 puts ""
 if failures == THREADS*TESTS
-  puts "All #{THREADS*TESTS} messages failed."
+  puts "    All #{THREADS*TESTS} messages failed."
+  total_fail = true
 else
-  puts "Average time for #{TESTS}x#{THREADS} messages: #{"%0.4f" % average} seconds per message, with #{failures} failures."
+  puts "    Failures: #{failures}"
+  puts ""
+  puts "    Average time for #{TESTS}x#{THREADS} messages:"
+  puts "      ~#{"%0.4f" % average} seconds per message, actual estimate." unless total_fail
+  puts "      ~#{"%0.4f" % (overall_average)} of overall runtime, per message."
+  puts ""
 end
+puts "    Total time running test: #{"%0.4f" % total} seconds:"
+puts "      ~#{"%0.4f" % (1/average)} messages per second, actual estimate." unless total_fail
+puts "      ~#{"%0.4f" % (1/overall_average)} messages per second, overall."
+puts ""
+puts "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
+puts "\n\n\n"
 
-puts "Total time running test: #{"%0.4f" % total} ( ~#{"%0.4f" % (total/(TESTS*THREADS))} of overall runtime, per message )"

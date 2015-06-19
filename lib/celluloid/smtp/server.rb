@@ -29,7 +29,7 @@ module Celluloid
 
       def ceased
         @server.close rescue nil
-        warn "SMTP Server online."
+        warn "SMTP Server offline."
       end
 
       def initialize(options={})
@@ -84,7 +84,7 @@ module Celluloid
         if HANDLERS > 0
           Celluloid[:handler].socket(socket, @options)
         else
-          self.class.protector(socket) { Connection.new(io, @options) }
+          self.class.protector(socket) { |io| Connection.new(io, @options) }
         end
       end
 

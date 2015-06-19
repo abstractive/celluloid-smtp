@@ -9,12 +9,12 @@ Mail.defaults do
   delivery_method :smtp, address: "localhost", port: 2525
 end
 
-TO = "test@extremist.digital"
+TO = "smtp@celluloid.io"
 FROM = TO
 
 fail "No TO address specified." unless TO
 
-puts "Simulating sending a message every #{INTERVAL} seconds, to #{TO}."
+puts "Simulating sending a message every #{INTERVAL} seconds."
 
 futures = []
 @mutex = Mutex.new
@@ -23,7 +23,6 @@ begin
     @mutex.synchronize {
       loop {
         futures = Thread.new {
-          print "."
           start = Time.now
           mail = Mail.new do
             from      FROM

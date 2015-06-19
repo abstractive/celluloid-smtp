@@ -1,25 +1,25 @@
 class Celluloid::SMTP::Connection
 
   def on_connection
-    debug("Client connected.")
+    debug("Client connected.") if DEBUG
   end
 
   def on_disconnect
-    debug("Disconnecting client.")
+    debug("Disconnecting client.") if DEBUG
   end
 
   def on_helo(helo)
-    debug("HELO: #{helo}")
+    debug("HELO: #{helo}") if DEBUG
     return helo
   end
 
   def on_mail_from(from)
-    debug("MAIL FROM: #{from}")
+    debug("MAIL FROM: #{from}") if DEBUG
     return from
   end
 
   def on_rcpt_to(to)
-    debug("RCPT TO: #{to}")
+    debug("RCPT TO: #{to}") if DEBUG
     return to
   end
 

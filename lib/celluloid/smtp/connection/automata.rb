@@ -27,12 +27,12 @@ class Celluloid::SMTP::Connection::Automata
   end
 
   state :handling, :to => [:handled, :disconnecting, :closed] do
-    debug "Parsing message."
+    debug "Parsing message." if DEBUG_AUTOMATA
     handle!
   end
 
   state :handled, :to => [:relaying, :delivering, :disconnecting, :closed] do
-    debug "Finished handling."
+    debug "Finished handling." if DEBUG_AUTOMATA
     if relaying?
       transition :relaying
     elsif delivering?
@@ -43,20 +43,20 @@ class Celluloid::SMTP::Connection::Automata
   end
 
   state :relaying, to: [:relayed, :closed] do
-    debug "Relaying message."
+    debug "Relaying message." if DEBUG_AUTOMATA
   end
 
   state :relayed, to: [:disconnecting, :closed] do
-    debug "Message relayed."
+    debug "Message relayed." if DEBUG_AUTOMATA
   end
 
   state :delivering, to: [:delivered, :closed] do
-    debug "Delivering message."
+    debug "Delivering message."  if DEBUG_AUTOMATA
 
   end
 
   state :delivered, to: [:disconnecting, :closed] do
-    debug "Message delivered."
+    debug "Message delivered."  if DEBUG_AUTOMATA
   end
 
   state :disconnecting, to: [:closed] do
@@ -67,6 +67,6 @@ class Celluloid::SMTP::Connection::Automata
   state :closed, :to => [] do
     close unless closed? rescue nil
     finish!
-    debug "Connection time: #{"%0.4f" % (length)}"
+    debug "Connection time: #{"%0.4f" % (length)}" if DEBUG_TIMING
   end
 end

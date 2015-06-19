@@ -36,7 +36,7 @@ class Celluloid::SMTP::Connection
       loop {
         output = begin
           data = @socket.readline
-          debug(">> #{data.chomp}") unless data?
+          debug(">> #{data.chomp}") unless data? if DEBUG
           line! data
         rescue Celluloid::SMTP::Exception => ex
           exception(ex, "Processing error")
@@ -45,7 +45,7 @@ class Celluloid::SMTP::Connection
           Error500.new.result
         end
         unless output.empty?
-          debug("<< #{output}")
+          debug("<< #{output}") if DEBUG
           print! output
         end
         break if quit? || closed?

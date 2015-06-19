@@ -1,6 +1,9 @@
 module Celluloid::SMTP::Constants
-  DEBUG = true
-  HANDLERS = 20
+  DEBUG = false
+  DEBUG_TIMING = true
+  DEBUG_AUTOMATA = false
+
+  HANDLERS = 0
   LOGGER = Celluloid::Internals::Logger
   DEFAULT_HOST = '0.0.0.0'
   DEFAULT_PORT = 2525
