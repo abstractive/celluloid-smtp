@@ -38,9 +38,10 @@ module Celluloid
         @port = options.fetch(:port, DEFAULT_PORT)
         @behavior = options.fetch(:behavior, DEFAULT_BEHAVIOR)
         @hostname = options.fetch(:hostname, DEFAULT_HOSTNAME)
+        @backlog = options.fetch(:backlog, DEFAULT_BACKLOG)
 
         @server = Celluloid::IO::TCPServer.new(@host, @port)
-        @server.listen(options.fetch(:backlog, DEFAULT_BACKLOG))
+        @server.listen(options.fetch(:backlog, @backlog))
 
         console("Celluloid::IO SMTP Server #{SMTP::VERSION} @ #{@host}:#{@port}")
 
