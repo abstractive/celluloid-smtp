@@ -1,7 +1,7 @@
 module Celluloid::SMTP::Constants
-  DEBUG = false
+  DEBUG = true
   DEBUG_TIMING = true
-  DEBUG_AUTOMATA = false
+  DEBUG_AUTOMATA = true
 
   HANDLERS = 0
   LOGGER = Celluloid::Internals::Logger
