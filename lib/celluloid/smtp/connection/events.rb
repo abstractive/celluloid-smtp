@@ -1,5 +1,13 @@
 class Celluloid::SMTP::Connection
 
+  def event!(method,*args)
+    debug("Executing event: #{method}")
+    send(method,*args)
+  rescue => ex
+    exception(ex, "Failure in event processor: #{method}")
+    nil
+  end
+
   def on_connection
     debug("Client connected.") if DEBUG
   end

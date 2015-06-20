@@ -73,7 +73,7 @@ class Celluloid::SMTP::Connection
         # 521 <domain> does not accept mail [rfc1846]
         raise Error503 unless helo?
         data = data.gsub(/^(HELO|EHLO)\ /i, '').strip
-        if return_value = on_helo(data)
+        if return_value = event!(:on_helo, data)
           data = return_value
         end
         @helo = data
@@ -108,7 +108,7 @@ class Celluloid::SMTP::Connection
         # 552 Requested mail action aborted: exceeded storage allocation
         raise Error503 unless rset?
         data = data.gsub(/^MAIL FROM\:/i, '').strip
-        if return_value = on_mail_from(data)
+        if return_value = event!(:on_mail_from, data)
           data = return_value
         end
         envelope[:from] = data
@@ -131,7 +131,7 @@ class Celluloid::SMTP::Connection
         # 553 Requested action not taken: mailbox name not allowed
         raise Error503 unless mail? || rset?
         data = data.gsub(/^RCPT TO\:/i, '').strip
-        if return_value = on_rcpt_to(data)
+        if return_value = event!(:on_rcpt_to, data)
           data = return_value
         end
         envelope[:to] << data
@@ -159,7 +159,7 @@ class Celluloid::SMTP::Connection
         message[:data] += data
         message[:data].gsub!(/\r\n\Z/, '').gsub!(/\.\Z/, '')    # remove ending line .
         begin
-          if return_value = on_message(@context)
+          if return_value = event!(:on_message, @context)
             message[:data] = return_value
           end
           message[:delivered] = Time.now.utc                    # save delivered time

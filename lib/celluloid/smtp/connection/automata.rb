@@ -9,9 +9,7 @@ class Celluloid::SMTP::Connection::Automata
                  :finish!,
                  :print,
                  :length,
-                 :on_connection,
-                 :on_disconnect,
-                 :on_message,
+                 :event!,
                  :handle!
 
   def initialize(connection)
@@ -22,7 +20,7 @@ class Celluloid::SMTP::Connection::Automata
 
   state :connection, :to => [:handling, :closed] do
     start!
-    on_connection
+    event!(:on_connection)
     transition :handling
   end
 
@@ -60,7 +58,7 @@ class Celluloid::SMTP::Connection::Automata
   end
 
   state :disconnecting, to: [:closed] do
-    on_disconnect
+    event!(:on_disconnect)
     transition :closed
   end
 
