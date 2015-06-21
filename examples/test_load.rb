@@ -42,7 +42,7 @@ class Sender
 
     begin
       mail.deliver
-      print "."
+      print "|"
       return Time.now.to_f - start.to_f
     rescue => ex
       STDERR.puts "Error communicating with server: #{ex} (#{ex.class})"
@@ -71,6 +71,7 @@ if total_fail
   puts "\n    All #{THREADS*TESTS} messages failed."
   total_fail = true
 end
+
 puts "\n    Failures: #{failures}"
 puts "\n    Average time for #{TESTS}x#{THREADS} messages:"
 puts "      ~#{"%0.4f" % average} seconds per message, actual estimate." unless total_fail
