@@ -24,27 +24,31 @@ begin
     @mutex.synchronize {
       loop {
         futures = Thread.new {
-          start = Time.now
-          mail = Mail.new do
-            from      FROM
-            to        TO
-            subject   "Test email: test_messages.rb @ #{Time.now.to_u}"
-            body      "Test message.... #{start}"
-          end
-
           begin
-            mail.deliver
-            print "|"
-          rescue Errno::ECONNREFUSED
-            print "X"
-          rescue EOFError
-            print "?"
-          rescue => ex
-            print "!"
-            STDERR.puts "Error communicating with server: #{ex} (#{ex.class})"
-          end
-        }  
-        sleep INTERVAL
+            start = Time.now
+            mail = Mail.new do
+              from      FROM
+              to        TO
+              subject   "Test email: test_messages.rb @ #{Time.now.to_u}"
+              body      "Test message.... #{start}"
+            end
+
+            begin
+              mail.deliver
+              print "|"
+            rescue Errno::ECONNREFUSED
+              print "X"
+            rescue EOFError
+              print "?"
+            rescue => ex
+              print "!"
+              STDERR.puts "Error communicating with server: #{ex} (#{ex.class})"
+            end
+          }  
+          sleep INTERVAL
+        rescue => ex
+          puts "Error: #{ex} (#{ex.class})"
+        end
       }
     }
   }
