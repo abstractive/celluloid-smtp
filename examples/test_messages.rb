@@ -29,7 +29,7 @@ begin
             mail = Mail.new do
               from      FROM
               to        TO
-              subject   "Test email: test_messages.rb @ #{Time.now.to_u}"
+              subject   "Test email: test_messages.rb @ #{Time.now.to_i}"
               body      "Test message.... #{start}"
             end
 
