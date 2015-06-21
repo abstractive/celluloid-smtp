@@ -1,8 +1,11 @@
 class Celluloid::SMTP::Connection
 
   def event!(method,*args)
+    start = Time.now
     debug("Executing event: #{method}") if DEBUG_EVENTS
-    send(method,*args)
+    result = send(method,*args)
+    debug("TIMER: #{"%0.4f" %(Time.now-start)} on event: #{method}") if DEBUG_TIMING
+    result
   rescue => ex
     exception(ex, "Failure in event processor: #{method}")
     nil

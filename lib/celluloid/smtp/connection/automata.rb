@@ -65,6 +65,6 @@ class Celluloid::SMTP::Connection::Automata
   state :closed, :to => [] do
     close unless closed? rescue nil
     finish!
-    debug "Connection time: #{"%0.4f" % length}" if DEBUG_TIMING
+    debug "TIMER: #{"%0.4f" % length} on connection." if DEBUG_TIMING
   end
 end
