@@ -5,9 +5,12 @@ require 'mail'
 
 INTERVAL = (ARGV[0] || 2.22).to_f
 HOST = ARGV[1] || "localhost"
+PORT = (ARGV[2] || 2525).to_i
+TO = ARGV[3] || "smtp@celluloid.io"
+FROM = ARGV[4] || TO
 
 Mail.defaults do
-  delivery_method :smtp, address: HOST, port: 2525
+  delivery_method :smtp, address: HOST, port: PORT
 end
 
 TO = ARGV[2] || "smtp@celluloid.io"
