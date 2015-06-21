@@ -18,7 +18,7 @@ end
 
 fail "No TO address specified." unless TO
 
-puts "Simulating sending #{TESTS}x#{THREADS} messages through #{HOST}@#{PORT}."
+puts "Simulating sending #{TESTS}x#{THREADS} messages through #{HOST}@#{PORT} to #{TO} from #{FROM}"
 
 class Sender
   include Celluloid
