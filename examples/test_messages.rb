@@ -28,7 +28,7 @@ begin
           mail = Mail.new do
             from      FROM
             to        TO
-            subject   'Test email.'
+            subject   "Test email: test_messages.rb @ #{Time.now.to_u}"
             body      "Test message.... #{start}"
           end
 
@@ -55,3 +55,5 @@ begin
 rescue Interrupt
   puts "Done testing."
 end
+
+puts "Finished."
