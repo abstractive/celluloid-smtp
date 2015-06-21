@@ -47,6 +47,7 @@ class Sender
     rescue => ex
       STDERR.puts "Error communicating with server: #{ex} (#{ex.class})"
       STDERR.puts ex.backtrace
+      STDERR.puts "\n\n\n"
       print "!"
       :fail
     end
