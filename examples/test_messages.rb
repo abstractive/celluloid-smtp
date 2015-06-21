@@ -3,7 +3,7 @@ $LOAD_PATH.push(File.expand_path("../../lib", __FILE__))
 require 'bundler/setup'
 require 'mail'
 
-INTERVAL = ARGV[0] || 2.22
+INTERVAL = (ARGV[0] || 2.22).to_i
 HOST = ARGV[1] || "localhost"
 
 Mail.defaults do
@@ -47,7 +47,7 @@ begin
         sleep INTERVAL
       }
     }
-  }
+  }1make
 
   loop {
     future = @mutex.synchronize { futures.shift }.value rescue nil
