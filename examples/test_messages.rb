@@ -3,14 +3,15 @@ $LOAD_PATH.push(File.expand_path("../../lib", __FILE__))
 require 'bundler/setup'
 require 'mail'
 
-INTERVAL = 2.22
+INTERVAL = ARGV[0] || 2.22
+HOST = ARGV[1] || "localhost"
 
 Mail.defaults do
-  delivery_method :smtp, address: "localhost", port: 2525
+  delivery_method :smtp, address: HOST, port: 2525
 end
 
-TO = "smtp@celluloid.io"
-FROM = TO
+TO = ARGV[2] || "smtp@celluloid.io"
+FROM = ARGV[3] || TO
 
 fail "No TO address specified." unless TO
 
