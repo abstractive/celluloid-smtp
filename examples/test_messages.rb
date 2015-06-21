@@ -47,7 +47,7 @@ begin
         sleep INTERVAL
       }
     }
-  }1make
+  }
 
   loop {
     future = @mutex.synchronize { futures.shift }.value rescue nil
