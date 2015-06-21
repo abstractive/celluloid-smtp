@@ -9,6 +9,8 @@ class Celluloid::SMTP::Connection
     else
       transition :disconnecting
     end
+  rescue *@configuration[:rescue]
+    transition :closed
   rescue => ex
     exception(ex, "Error handling command session")
     transition :closed
