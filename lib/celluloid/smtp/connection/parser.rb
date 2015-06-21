@@ -43,11 +43,13 @@ class Celluloid::SMTP::Connection
           line! data
         rescue Celluloid::SMTP::Exception => ex
           exception(ex, "Processing error")
-        rescue *@configuration[:rescue] => ex
-          debug("Socket error: #{ex} (#{ex.class})") if DEBUG
-          Error500.new.result
+          ex.result
         rescue => ex
-          exception(ex, "Unknown exception")
+          if @configuration[:rescue].include? ex.class
+            debug("Socket error: #{ex} (#{ex.class})") if DEBUG
+          else
+            exception(ex, "Unknown exception")
+          end
           Error500.new.result
         end
         unless output.empty?
