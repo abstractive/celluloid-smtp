@@ -10,7 +10,7 @@ TO = ARGV[3] || "smtp@celluloid.io"
 FROM = ARGV[4] || TO
 
 Mail.defaults do
-  delivery_method :smtp, address: HOST, port: PORT
+  delivery_method :smtp, address: HOST, port: PORT, openssl_verify_mode: OpenSSL::SSL::VERIFY_NONE
 end
 
 fail "No TO address specified." unless TO

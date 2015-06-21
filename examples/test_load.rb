@@ -13,7 +13,7 @@ TO = ARGV[2] || "smtp@celluloid.io"
 FROM = ARGV[3] || TO
 
 Mail.defaults do
-  delivery_method :smtp, address: HOST, port: PORT
+  delivery_method :smtp, address: HOST, port: PORT, openssl_verify_mode: OpenSSL::SSL::VERIFY_NONE
 end
 
 fail "No TO address specified." unless TO
@@ -36,7 +36,7 @@ class Sender
     mail = Mail.new do
       from      FROM
       to        TO
-      subject   "Test email: Load test ##{Time.now}"
+      subject   "Test email: Load test ##{Time.now.to_f}"
       body      "Test message.... #{Time.now}"
     end
 
