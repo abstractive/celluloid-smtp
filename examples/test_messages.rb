@@ -13,9 +13,6 @@ Mail.defaults do
   delivery_method :smtp, address: HOST, port: PORT
 end
 
-TO = ARGV[2] || "smtp@celluloid.io"
-FROM = ARGV[3] || TO
-
 fail "No TO address specified." unless TO
 
 puts "Simulating sending a message through #{HOST}@#{PORT} every #{INTERVAL} seconds to #{TO} from #{FROM}."
