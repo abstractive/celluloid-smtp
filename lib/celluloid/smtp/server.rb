@@ -71,11 +71,9 @@ module Celluloid
           break unless @online
           begin
             socket = @server.accept
-          rescue *@options[:rescue] => ex
-            warn "Error accepting socket: #{ex.class}: #{ex.to_s}"
+          rescue IOError, EOFError, *@options[:rescue] => ex
+            warn "Socket Error: #{ex.class}: #{ex.to_s}"
             next
-          rescue IOError, EOFError
-            warn "I/O Error on socket: #{ex.class}: #{ex.to_s}"
           end
           async.connection(socket)
         }
