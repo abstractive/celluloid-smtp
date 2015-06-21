@@ -10,6 +10,7 @@ class Celluloid::SMTP::Connection
       transition :disconnecting
     end
   rescue *@configuration[:rescue]
+    debug("Socket error: #{ex} (#{ex.class})") if DEBUG
     transition :closed
   rescue => ex
     exception(ex, "Error handling command session")
@@ -42,6 +43,9 @@ class Celluloid::SMTP::Connection
           line! data
         rescue Celluloid::SMTP::Exception => ex
           exception(ex, "Processing error")
+        rescue *@configuration[:rescue] => ex
+          debug("Socket error: #{ex} (#{ex.class})") if DEBUG
+          Error500.new.result
         rescue => ex
           exception(ex, "Unknown exception")
           Error500.new.result
@@ -54,10 +58,10 @@ class Celluloid::SMTP::Connection
       }
       print! "221 Service closing transmission channel" unless closed?
       return true
-    rescue EOFError
-      debug("Lost connection due to client abort.")
+    rescue *@configuration[:rescue] => ex
+      debug("Lost connection due to socket error, likely client abort: #{ex} (#{ex.class})") if DEBUG
     rescue Exception => ex
-      exception(ex, "Error parsing command session")
+      exception(ex, "Error parsing command session") if DEBUG
       print! Error421.new.result unless closed?
     end
     false
