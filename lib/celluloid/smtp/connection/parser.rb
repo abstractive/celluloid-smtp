@@ -44,12 +44,11 @@ class Celluloid::SMTP::Connection
         rescue Celluloid::SMTP::Exception => ex
           exception(ex, "Processing error")
           ex.result
+        rescue IOError, EOFError, *@configuration[:rescue]
+          debug("Socket error: #{ex} (#{ex.class})") if DEBUG
+          Error500.new.result
         rescue => ex
-          if @configuration[:rescue].include? ex.class
-            debug("Socket error: #{ex} (#{ex.class})") if DEBUG
-          else
-            exception(ex, "Unknown exception")
-          end
+          exception(ex, "Unknown exception")
           Error500.new.result
         end
         unless output.empty?
@@ -60,7 +59,7 @@ class Celluloid::SMTP::Connection
       }
       print! "221 Service closing transmission channel" unless closed?
       return true
-    rescue *@configuration[:rescue] => ex
+    rescue IOError, EOFError, *@configuration[:rescue] => ex
       debug("Lost connection due to socket error, likely client abort: #{ex} (#{ex.class})") if DEBUG
     rescue Exception => ex
       exception(ex, "Error parsing command session") if DEBUG
