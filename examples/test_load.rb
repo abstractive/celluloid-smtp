@@ -45,6 +45,7 @@ class Sender
       print "."
       return Time.now.to_f - start.to_f
     rescue => ex
+      STDERR.puts "Error communicating with server: #{ex} (#{ex.class})"
       print "!"
       :fail
     end
