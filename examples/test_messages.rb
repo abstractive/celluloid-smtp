@@ -3,7 +3,7 @@ $LOAD_PATH.push(File.expand_path("../../lib", __FILE__))
 require 'bundler/setup'
 require 'mail'
 
-INTERVAL = (ARGV[0] || 2.22).to_i
+INTERVAL = (ARGV[0] || 2.22).to_f
 HOST = ARGV[1] || "localhost"
 
 Mail.defaults do
