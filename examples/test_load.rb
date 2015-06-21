@@ -36,7 +36,7 @@ class Sender
     mail = Mail.new do
       from      FROM
       to        TO
-      subject   'Test email.'
+      subject   "Test email: Load test ##{Time.now}"
       body      "Test message.... #{Time.now}"
     end
 
