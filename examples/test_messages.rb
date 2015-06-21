@@ -18,7 +18,7 @@ FROM = ARGV[3] || TO
 
 fail "No TO address specified." unless TO
 
-puts "Simulating sending a message every #{INTERVAL} seconds."
+puts "Simulating sending a message through #{HOST}@#{PORT} every #{INTERVAL} seconds to #{TO} from #{FROM}."
 
 futures = []
 @mutex = Mutex.new
