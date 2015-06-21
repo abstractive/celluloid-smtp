@@ -44,11 +44,11 @@ begin
               print "!"
               STDERR.puts "Error communicating with server: #{ex} (#{ex.class})"
             end
-          }  
-          sleep INTERVAL
-        rescue => ex
-          puts "Error: #{ex} (#{ex.class})"
-        end
+          rescue => ex
+            puts "Error: #{ex} (#{ex.class})"
+          end
+        }  
+        sleep INTERVAL
       }
     }
   }
