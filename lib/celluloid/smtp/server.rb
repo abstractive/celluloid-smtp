@@ -71,11 +71,11 @@ module Celluloid
           break unless @online
           begin
             socket = @server.accept
+            async.connection(socket)
           rescue IOError, EOFError, *@options[:rescue] => ex
-            warn "Socket Error: #{ex.class}: #{ex.to_s}"
+            exception(ex, "Socket Error")
             next
           end
-          async.connection(socket)
         }
       end
 
