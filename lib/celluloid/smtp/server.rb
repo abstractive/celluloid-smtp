@@ -74,6 +74,7 @@ module Celluloid
             async.connection(socket)
           rescue IOError, EOFError, *@options[:rescue] => ex
             exception(ex, "Socket Error")
+            socket.close rescue nil
             next
           end
         }
