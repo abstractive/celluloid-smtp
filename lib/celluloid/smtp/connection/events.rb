@@ -19,6 +19,10 @@ class Celluloid::SMTP::Connection
     debug("Disconnecting client.") if DEBUG_EVENTS
   end
 
+  def on_close
+    debug("Connection closed.") if DEBUG_EVENTS
+  end
+
   def on_helo(helo)
     debug("HELO: #{helo}") if DEBUG_EVENTS
     return helo
