@@ -2,8 +2,8 @@ source "https://rubygems.org"
 
 gemspec
 
-gem 'celluloid', github: 'celluloid/celluloid', branch: '0.17.0-prerelease', submodules: true
-gem 'celluloid-io', github: 'celluloid/celluloid-io', branch: '0.17.0-dependent', submodules: true
+gem 'celluloid'
+gem 'celluloid-io'
 
 #de For debugging. Watching for thread leaks.
 gem 'cellumon', github: 'digitalextremist/cellumon', branch: 'master'
